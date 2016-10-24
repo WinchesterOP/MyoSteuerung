@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="algorithmus">
+    <Position X="1" Y="2" Width="2" />
+    <Members>
+      <Method Name="~algorithmus" Hidden="true" />
+      <Method Name="algorithmus" Hidden="true" />
+      <Method Name="GetDesktopResolution" Hidden="true" />
+      <Field Name="last_gesture_id" Hidden="true" />
+      <Field Name="window_horizontal" Hidden="true" />
+      <Field Name="window_vertical" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AgAAAAAEAAAAgAEEACAAABBCAAgAEEIAAAiCIAZJAAE=</HashCode>
+      <FileName>algorithmus.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="neuralesNetz">
+    <Position X="5.75" Y="0.75" Width="2" />
+    <Members>
+      <Method Name="~neuralesNetz" Hidden="true" />
+      <Method Name="neuralesNetz" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>ABAAEAASACAgAAgAAAAEAoAAAAIAAAABAAgAAQAEAQA=</HashCode>
+      <FileName>neuralesNetz.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="gui">
+    <Position X="4" Y="5.5" Width="3.25" />
+    <Members>
+      <Method Name="~gui" Hidden="true" />
+      <Method Name="gui" Hidden="true" />
+      <Field Name="hub" Hidden="true" />
+      <Method Name="listenKeyPress" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AAAQAAhEAAAAAAAAADBABAABAAAAAAAAAAAAEAEAAAA=</HashCode>
+      <FileName>gui.h</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="algo" />
+      <Field Name="n_net" />
+      <Field Name="myo" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="myo::Myo" Collapsed="true">
+    <Position X="8" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAAECAAEAAAIAAACAAAAAAAAAAAKAAgEABABAA=</HashCode>
+      <FileName>c:\Users\Neco\Desktop\Abschluss\Programm\MyoProject1\myo-sdk-win-0.9.0\include\myo\cxx\Myo.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

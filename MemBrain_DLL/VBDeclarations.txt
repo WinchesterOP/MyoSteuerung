@@ -1,0 +1,545 @@
+' These declarations have to be copied in the beginning of a Visual Basic Application file
+' to access the MemBrain DLL functions from out Visual Basic.
+
+' Possible teach result return values
+Private Const MB_TR_OK = 0                               ' Teach step OK, teacher not finished
+Private Const MB_TR_TARGET_NET_ERROR_REACHED = 1         ' The target error has been reached. Teacher finished.
+Private Const MB_TR_MAX_NEURONS_ADDED = 2                ' The maximum number of neurons has been added by the teacher. Teacher finished.
+Private Const MB_TR_TEACH_ABORTED = 3                    ' The teacher has been aborted by another operation. Not used up to now
+Private Const MB_TR_NOT_IN_SYNC = 4                      ' The net is not in sync with the lesson.
+Private Const MB_TR_WRONG_ACT_FUNCTION = 5               ' The net contains at least one neuron that has an activation function which is incompatible with the teacher
+Private Const MB_TR_OUT_OF_LESSON_RANGE = 6              ' The teacher operates outside the current lesson range. Not used up to now.
+Private Const MB_TR_ANALYSIS_ERROR = 7                   ' Teaching is not possible because of architectural errors in net.
+Private Const MB_TR_LESSON_EMPTY = 8                     ' Teaching is not possible because the currently active lesson is empty.
+Private Const MB_TR_NET_ERR_LESSON_EMPTY = 9             ' Teaching is not possible because the currently active net error lesson is empty
+Private Const MB_TR_NET_ERR_NOT_IN_SYNC = 10             ' The net is not in sync with the net error lesson.
+
+' Constants for interfaces that require a boolean value to be passed as Long
+Private Const FALSE_VAL As Long = 0
+Private Const TRUE_VAL As Long = 1
+
+' <OK> return value for many interfaces
+Private Const MEMBRAIN_ERR As Long = -1      'An error occured
+Private Const MEMBRAIN_OK As Long = 0        'Call successful
+
+' Get the version information string of the DLL.
+' Specify maximum length of string to be copied (excluding the terminating '\0'.
+' A terminating '\0' will be attached in every case.
+Private Declare Function MB_GetVersionInfo Lib "MemBrainDll.dll" _
+Alias "__MB_GetVersionInfo@8" (ByVal infoStr As String, ByVal maxLen As Long) As Long
+
+' Add a new neural net to the DLL's internal array of neural nets.
+Private Declare Sub MB_AddNet Lib "MemBrainDll.dll" _
+Alias "__MB_AddNet@0" ()
+
+' Get number of currently available neural nets in the DLL's array
+Private Declare Function MB_GetNetCount Lib "MemBrainDll.dll" _
+Alias "__MB_GetNetCount@0" () As Long
+
+' Get index of the currently selected net
+Private Declare Function MB_GetSelectedNet Lib "MemBrainDll.dll" _
+Alias "__MB_GetSelectedNet@0" () As Long
+
+' Delete the neural net at index <idx>.
+Private Declare Function MB_DeleteNet Lib "MemBrainDll.dll" _
+Alias "__MB_DeleteNet@4" (ByVal idx As Long) As Long
+
+' Select one of the available nets as the currently active one.
+Private Declare Function MB_SelectNet Lib "MemBrainDll.dll" _
+Alias "__MB_SelectNet@4" (ByVal idx As Long) As Long
+
+' Load the currently active neural net from the given *.mbn file (including path)
+Private Declare Function MB_LoadNet Lib "MemBrainDll.dll" _
+Alias "__MB_LoadNet@4" (ByVal fileName As String) As Long
+
+' Save a MemBrain neural net to the given *.mbn file (including path)
+Private Declare Function MB_SaveNetAs Lib "MemBrainDll.dll" _
+Alias "__MB_SaveNetAs@4" (ByVal fileName As String) As Long
+
+' Save an already loaded MemBrain neural net (overwrite original file)
+Private Declare Function MB_SaveNet Lib "MemBrainDll.dll" _
+Alias "__MB_SaveNet@0" () As Long
+
+' Reset the net. All activations and link spikes are set to 0.
+Private Declare Sub MB_ResetNet Lib "MemBrainDll.dll" _
+Alias "__MB_ResetNet@0" ()
+
+' Get number of input neurons in the net
+Private Declare Function MB_GetInputCount Lib "MemBrainDll.dll" _
+Alias "__MB_GetInputCount@0" () As Long
+
+' Get number of output neurons in the net
+Private Declare Function MB_GetOutputCount Lib "MemBrainDll.dll" _
+Alias "__MB_GetOutputCount@0" () As Long
+
+' Get name of input neuron at index <idx>. Specify maximum length
+' of string to be copied (excluding the terminating '\0'.
+' A terminating '\0' will be attached in every case.
+Private Declare Function MB_GetInputName Lib "MemBrainDll.dll" _
+Alias "__MB_GetInputName@12" (ByVal idx As Long, ByVal name As String, ByVal maxLen As Long) As Long
+
+' Get name of output neuron at index <idx>. Specify maximum length
+' of string to be copied (excluding the terminating '\0'.
+' A terminating '\0' will be attached in every case.
+Private Declare Function MB_GetOutputName Lib "MemBrainDll.dll" _
+Alias "__MB_GetOutputName@12" (ByVal idx As Long, ByVal name As String, ByVal maxLen As Long) As Long
+
+' Apply an activation value to the input neuron at index <idx>.
+Private Declare Function MB_ApplyInputAct Lib "MemBrainDll.dll" _
+Alias "__MB_ApplyInputAct@12" (ByVal idx As Long, ByVal act As Double) As Long
+
+' Get the activation value of the input neuron at index <idx>.
+Private Declare Function MB_GetInputAct Lib "MemBrainDll.dll" _
+Alias "__MB_GetInputAct@8" (ByVal idx As Long, ByRef act As Double) As Long
+
+' Perform one think step of the net
+Private Declare Sub MB_ThinkStep Lib "MemBrainDll.dll" _
+Alias "__MB_ThinkStep@0" ()
+
+' Get the activation value of the ouTput neuron at index <idx>.
+Private Declare Function MB_GetOutputAct Lib "MemBrainDll.dll" _
+Alias "__MB_GetOutputAct@8" (ByVal idx As Long, ByRef act As Double) As Long
+
+' Get the output value of the output neuron at index <idx>.
+Private Declare Function MB_GetOutputOut Lib "MemBrainDll.dll" _
+Alias "__MB_GetOutputOut@8" (ByVal idx As Long, ByRef outVal As Double) As Long
+
+' Get index of the last output winner neuron of the net.
+Private Declare Function MB_GetOutputWinnerNeuron Lib "MemBrainDll.dll" _
+Alias "__MB_GetOutputWinnerNeuron@0" () As Long
+
+' Get the activation range of the input neuron at index <idx>.
+Private Declare Function MB_GetInputActRange Lib "MemBrainDll.dll" _
+Alias "__MB_GetInputActRange@12" (ByVal idx As Long, ByRef actMin As Double, ByRef actMax As Double) As Long
+
+' Get the activation range of the output neuron at index <idx>.
+Private Declare Function MB_GetOutputActRange Lib "MemBrainDll.dll" _
+Alias "__MB_GetOutputActRange@12" (ByVal idx As Long, ByRef actMin As Double, ByRef actMax As Double) As Long
+
+
+
+
+
+
+
+' --------------------- Interfaces for lesson handling and teaching --------------------
+' Load a lesson to be the currently active
+Private Declare Function MB_LoadLesson Lib "MemBrainDll.dll" _
+Alias "__MB_LoadLesson@4" (ByVal fileName As String) As Long
+
+' Import the currently active lesson from csv
+Private Declare Function MB_ImportLesson Lib "MemBrainDll.dll" _
+Alias "__MB_ImportLesson@4" (ByVal fileName As String) As Long
+
+' Import the currently active lesson from raw csv
+Private Declare Function MB_ImportLessonRaw Lib "MemBrainDll.dll" _
+Alias "__MB_ImportLessonRaw@4" (ByVal fileName As String) As Long
+
+' Import the currently active lesson inputs from raw csv
+Private Declare Function MB_ImportLessonInputsRaw Lib "MemBrainDll.dll" _
+Alias "__MB_ImportLessonInputsRaw@4" (ByVal fileName As String) As Long
+
+' Import the currently active lesson outputs from raw csv
+Private Declare Function MB_ImportLessonOutputsRaw Lib "MemBrainDll.dll" _
+Alias "__MB_ImportLessonOutputsRaw@4" (ByVal fileName As String) As Long
+
+' Save the currently active lesson to its current file name
+Private Declare Function MB_SaveLesson Lib "MemBrainDll.dll" _
+Alias "__MB_SaveLesson@0" () As Long
+
+' Save the currently active lesson to the given file name
+Private Declare Function MB_SaveLessonAs Lib "MemBrainDll.dll" _
+Alias "__MB_SaveLessonAs@4" (ByVal fileName As String) As Long
+
+' Export the currently active lesson to csv
+Private Declare Function MB_ExportLesson Lib "MemBrainDll.dll" _
+Alias "__MB_EportLesson@8" (ByVal fileName As String, ByVal maxCols As Long) As Long
+
+' Export the currently active lesson to raw csv
+Private Declare Function MB_ExportLessonRaw Lib "MemBrainDll.dll" _
+Alias "__MB_EportLessonRaw@8" (ByVal fileName As String, ByVal maxCols As Long) As Long
+
+' Export the inputs of the currently active lesson to raw csv
+Private Declare Function MB_ExportLessonInputsRaw Lib "MemBrainDll.dll" _
+Alias "__MB_EportLessonInputsRaw@8" (ByVal fileName As String, ByVal maxCols As Long) As Long
+
+' Export the outputs of the currently active lesson to raw csv
+Private Declare Function MB_ExportLessonOutputsRaw Lib "MemBrainDll.dll" _
+Alias "__MB_EportLessonOutputsRaw@8" (ByVal fileName As String, ByVal maxCols As Long) As Long
+
+' Set the number of inputs of the currently administered lesson
+Private Declare Function MB_SetLessonInputCount Lib "MemBrainDll.dll" _
+Alias "__MB_SetLessonInputCount@4" (ByVal count As Long) As Long
+
+' Get the number of inputs of the currently administered lesson
+Private Declare Function MB_GetLessonInputCount Lib "MemBrainDll.dll" _
+Alias "__MB_GetLessonInputCount@0" () As Long
+
+' Set the number of outputs of the currently administered lesson
+Private Declare Function MB_SetLessonOutputCount Lib "MemBrainDll.dll" _
+Alias "__MB_SetLessonOutputCount@4" (ByVal count As Long) As Long
+
+' Get the number of outputs of the currently administered lesson
+Private Declare Function MB_GetLessonOutputCount Lib "MemBrainDll.dll" _
+Alias "__MB_GetLessonOutputCount@0" () As Long
+
+' Set the input name at index <idx> of the currently active lesson
+Private Declare Function MB_SetLessonInputName Lib "MemBrainDll.dll" _
+Alias "__MB_SetLessonInputName@8" (ByVal idx As Long, ByVal name As String) As Long
+
+' Get the input name at index <idx> of the currently active lesson
+Private Declare Function MB_GetLessonInputName Lib "MemBrainDll.dll" _
+Alias "__MB_GetLessonInputName@12" (ByVal idx As Long, ByVal name As String, ByVal maxLen As Long) As Long
+
+' Set the output name at index <idx> of the currently active lesson
+Private Declare Function MB_SetLessonOutputName Lib "MemBrainDll.dll" _
+Alias "__MB_SetLessonOutputName@8" (ByVal idx As Long, ByVal name As String) As Long
+
+' Get the output name at index <idx> of the currently active lesson
+Private Declare Function MB_GetLessonOutputName Lib "MemBrainDll.dll" _
+Alias "__MB_GetLessonOutputName@12" (ByVal idx As Long, ByVal name As String, ByVal maxLen As Long) As Long
+
+' Set the input value at index <idx> of the current pattern
+Private Declare Function MB_SetPatternInput Lib "MemBrainDll.dll" _
+Alias "__MB_SetPatternInput@12" (ByVal idx As Long, ByVal value As Double) As Long
+
+' Get the input value at index <idx> of the current pattern
+Private Declare Function MB_GetPatternInput Lib "MemBrainDll.dll" _
+Alias "__MB_GetPatternInput@8" (ByVal idx As Long, ByRef value As Double) As Long
+
+' Set the output value at index <idx> of the current pattern
+Private Declare Function MB_SetPatternOutput Lib "MemBrainDll.dll" _
+Alias "__MB_SetPatternOutput@12" (ByVal idx As Long, ByVal value As Double) As Long
+
+' Get the output value at index <idx> of the current pattern
+Private Declare Function MB_GetPatternOutput Lib "MemBrainDll.dll" _
+Alias "__MB_GetPatternOutput@8" (ByVal idx As Long, ByRef value As Double) As Long
+
+' Select the currently active pattern of the currently active lesson
+Private Declare Function MB_SelectPattern Lib "MemBrainDll.dll" _
+Alias "__MB_SelectPattern@4" (ByVal idx As Long) As Long
+
+' Get the currently selected pattern index of the currently active lesson
+Private Declare Function MB_GetSelectedPattern Lib "MemBrainDll.dll" _
+Alias "__MB_GetSelectedPattern@0" () As Long
+
+' Delete the currently active pattern of the currently active lesson
+Private Declare Function MB_DeletePattern Lib "MemBrainDll.dll" _
+Alias "__MB_DeletePattern@0" () As Long
+
+' Add a pattern to the end of the active lesson
+Private Declare Sub MB_AddPattern Lib "MemBrainDll.dll" _
+Alias "__MB_AddPattern@0" ()
+
+' Get the number of patterns in the active lesson
+Private Declare Function MB_GetLessonSize Lib "MemBrainDll.dll" _
+Alias "__MB_GetLessonSize@0" () As Long
+
+' Enable/Disable the output data section of the active lesson
+Private Declare Function MB_EnableLessonOutData Lib "MemBrainDll.dll" _
+Alias "__MB_EnableLessonOutData@4" (ByVal outDataEnabled As Long) As Long
+
+' Transfer I/O names names and count from the currently active net to
+' the currently active lesson
+Private Declare Function MB_NamesFromNet Lib "MemBrainDll.dll" _
+Alias "__MB_NamesFromNet@0" () As Long
+
+' Transfer I/O names names from the currently active lesson to
+' the currently active net
+Private Declare Function MB_NamesToNet Lib "MemBrainDll.dll" _
+Alias "__MB_NamesToNet@0" () As Long
+
+' Set the number of currently administered lessons
+Private Declare Function MB_SetLessonCount Lib "MemBrainDll.dll" _
+Alias "__MB_SetLessonCount@4" (ByVal count As Long) As Long
+
+' Get the number of currently administered lessons
+Private Declare Function MB_GetLessonCount Lib "MemBrainDll.dll" _
+Alias "__MB_GetLessonCount@0" () As Long
+
+' Select the active lesson
+Private Declare Function MB_SelectLesson Lib "MemBrainDll.dll" _
+Alias "__MB_SelectLesson@4" (ByVal idx As Long) As Long
+
+' Get the index of the currently active lesson
+Private Declare Function MB_GetSelectedLesson Lib "MemBrainDll.dll" _
+Alias "__MB_GetSelectedLesson@0" () As Long
+
+' Apply the currently active pattern to the inputs of the currently active net
+Private Declare Function MB_ApplyPattern Lib "MemBrainDll.dll" _
+Alias "__MB_ApplyPattern@0" () As Long
+
+' Select the current recording type: 0 = Activation, 1 = Output
+Private Declare Function MB_SetRecordingType Lib "MemBrainDll.dll" _
+Alias "__MB_SetRecordingType@4" (ByVal recordingType As Long) As Long
+
+' Start recording data to a lesson: Specify lesson index to record to and step count
+Private Declare Function MB_StartRecording Lib "MemBrainDll.dll" _
+Alias "__MB_SelectLesson@8" (ByVal idx As Long, ByVal stepCount As Long) As Long
+
+' Stop recording data to lesson
+Private Declare Sub MB_StopRecording Lib "MemBrainDll.dll" _
+Alias "__MB_StopRecording@0" ()
+
+' Think on all patters of the currently active lesson
+Private Declare Function MB_ThinkLesson Lib "MemBrainDll.dll" _
+Alias "__MB_ThinkLesson@0" () As Long
+
+' Load a teacher file
+Private Declare Function MB_LoadTeacherFile Lib "MemBrainDll.dll" _
+Alias "__MB_LoadTeacherFile@4" (ByVal fileName As String) As Long
+
+' Select the active teacher by name
+Private Declare Function MB_SelectTeacher Lib "MemBrainDll.dll" _
+Alias "__MB_SelectTeacher@4" (ByVal teacherName As String) As Long
+
+' Perform one teach step (lesson run). Return result according to Teacher.h (TR_....)
+Private Declare Function MB_TeachStep Lib "MemBrainDll.dll" _
+Alias "__MB_TeachStep@0" () As Long
+
+' Conclude the current teach run. Should be called after every teach process completion.
+Private Declare Sub MB_StopTeaching Lib "MemBrainDll.dll" _
+Alias "__MB_AddPattern@0" ()
+
+' Get the number of available teachers
+Private Declare Function MB_GetTeacherCount Lib "MemBrainDll.dll" _
+Alias "__MB_GetTeacherCount@0" () As Long
+
+' Get the name of the teacher at index <idx> Specify maximum length
+' of string to be copied (excluding the terminating '\0'.
+' A terminating '\0' will be attached in every case.
+Private Declare Function MB_GetTeacherName Lib "MemBrainDll.dll" _
+Alias "__MB_GetLessonInputName@12" (ByVal idx As Long, ByVal name As String, ByVal maxLen As Long) As Long
+
+' Randomize the currently active net
+Private Declare Sub MB_RandomizeNet Lib "MemBrainDll.dll" _
+Alias "__MB_RandomizeNet@0" ()
+
+' Get the last known error of the currently active net
+Private Declare Function MB_GetLastNetError Lib "MemBrainDll.dll" _
+Alias "__MB_GetLastNetError@0" () As Double
+
+' Create an FFT lesson from the currently active lesson
+Private Declare Function MB_CreateFftLesson Lib "MemBrainDll.dll" _
+Alias "__MB_CreateFftLesson@16" (ByVal complex As Long, ByVal inputsAreColumns As Long, ByVal minFreqIdx As Long, ByVal maxFreqPoints As Long) As Long
+
+' Get frequency that corresponds to a frequency index in an FFT
+Private Declare Function MB_GetFftFrequency Lib "MemBrainDll.dll" _
+Alias "__MB_GetFftFrequency@12" (ByVal freqIdx As Long, ByVal overallSampleTime As Double) As Double
+
+' Create a new lesson with averaged inputs from the current lesson
+Private Declare Function MB_CreateAverageLesson Lib "MemBrainDll.dll" _
+Alias "__MB_CreateAverageLesson@4" (ByVal newInputDimension As Long) As Long
+
+' Get the separators for CSV file parsing
+' A terminating '\0' will be attached to the strings, each must be of length 2 (character plus terminating 0).
+Private Declare Function MB_GetCsvFileSeparators Lib "MemBrainDll.dll" _
+Alias "__MB_GetCsvFileSeparators@8" (ByVal listSep As String, ByVal decSep As String) As Long
+
+' Set the separators for CSV file parsing
+Private Declare Function MB_SetCsvFileSeparators Lib "MemBrainDll.dll" _
+Alias "__MB_SetCsvFileSeparators@8" (ByVal listSep As String, ByVal decSep As String) As Long
+
+
+
+' ---------------- Interfaces for editing neural nets down from here---------------------------
+
+' Properties of a Neuron
+Private Type NeuronProp
+    act As Double
+    actFunc As Long                        ' see const definitions below
+    actThres As Double
+    lockActThres As Long
+    actSustain As Double                    ' 0..1
+    outputFireLevel As Long                 ' see const definitions below
+    outputRecovTime As Long                 ' 1..100000
+    fireThresLow As Double                  ' fireThresHi must be >= fireThresLo
+    fireThresHi As Double                   ' fireThresHi must be >= fireThresLo
+    useNormalization As Long
+    normRangeLow As Double
+    normRangeHigh As Double
+    useActIgnoreVal As Long
+    actIgnoreVal As Double
+    expLogistic As Double
+    parmTanHyp As Double
+    allowTeacherOutputConnect As Long
+    displayName As Long
+    displayAct As Long
+    isPixel As Long
+    width As Long
+End Type
+
+' Properties of a Link
+Private Type LinkProp
+    weight As Double
+    lockWeight As Long
+    length As Long             ' 1..10000
+    displayWeight As Long
+End Type
+
+' possible activation functions
+Private Const MB_AF_LOGISTIC As Long = 0
+Private Const MB_AF_IDENTICAL As Long = 1
+Private Const MB_AF_IDENTICAL_0_1 As Long = 2
+Private Const MB_AF_TAN_H As Long = 3
+Private Const MB_AF_BINARY As Long = 4
+Private Const MB_AF_MIN_EUCLID_DIST As Long = 5
+
+' possible output ranges
+Private Const MB_OFL_1 As Long = 0           ' 0 or 1
+Private Const MB_OFL_ACT As Long = 1         ' as activation function calculates
+
+
+
+' Clear selection
+Private Declare Sub MB_ClearSelection Lib "MemBrainDll.dll" _
+Alias "__MB_ClearSelection@0" ()
+
+' Select an input neuron
+Private Declare Function MB_SelectInput Lib "MemBrainDll.dll" _
+Alias "__MB_SelectInput@8" (ByVal inNeuronIdx As Long, ByVal addToSelection As Long) As Long
+
+' Select all input neurons
+Private Declare Sub MB_SelectAllInputs Lib "MemBrainDll.dll" _
+Alias "__MB_SelectAllInputs@4" (ByVal addToSelection As Long)
+
+' Select an output neuron
+Private Declare Function MB_SelectOutput Lib "MemBrainDll.dll" _
+Alias "__MB_SelectOutput@8" (ByVal outNeuronIdx As Long, ByVal addToSelection As Long) As Long
+
+' Select all output neurons
+Private Declare Sub MB_SelectAllOutputs Lib "MemBrainDll.dll" _
+Alias "__MB_SelectAllOutputs@4" (ByVal addToSelection As Long)
+
+' Get the number of hidden layers in the net
+Private Declare Function MB_GetHiddenLayerCount Lib "MemBrainDll.dll" _
+Alias "__MB_GetHiddenLayerCount@0" () As Long
+
+' Get the number of neurons in a given hidden layer
+Private Declare Function MB_GetHiddenCount Lib "MemBrainDll.dll" _
+Alias "__MB_GetHiddenLayerCount@4" (ByVal hidLayerIdx As Long) As Long
+
+' Get the number of neurons in all hidden layers
+Private Declare Function MB_GetHiddenCountAll Lib "MemBrainDll.dll" _
+Alias "__MB_GetHiddenCountAll@0" () As Long
+
+' Get the number of neurons in the context layer
+Private Declare Function MB_GetContextCount Lib "MemBrainDll.dll" _
+Alias "__MB_GetContextCount@0" () As Long
+
+' Get the number of neurons in the unresolved layer
+Private Declare Function MB_GetUnresolvedCount Lib "MemBrainDll.dll" _
+Alias "__MB_GetUnresolvedCount@0" () As Long
+
+' Select a hidden neuron
+Private Declare Function MB_SelectHidden Lib "MemBrainDll.dll" _
+Alias "__MB_SelectHidden@12" (ByVal hidLayerIdx As Long, ByVal hidNeuronIdx As Long, ByVal addToSelection As Long) As Long
+
+' Select all neurons in a hidden layer
+Private Declare Function MB_SelectHiddenLayer Lib "MemBrainDll.dll" _
+Alias "__MB_SelectHiddenLayer@8" (ByVal hidLayerIdx As Long, ByVal addToSelection As Long) As Long
+
+' Select all hidden neurons
+Private Declare Sub MB_SelectAllHidden Lib "MemBrainDll.dll" _
+Alias "__MB_SelectAllHidden@4" (ByVal addToSelection As Long)
+
+' Select a context neuron
+Private Declare Function MB_SelectContext Lib "MemBrainDll.dll" _
+Alias "__MB_SelectContext@8" (ByVal ctxNeuronIdx As Long, ByVal addToSelection As Long) As Long
+
+' Select all context neurons
+Private Declare Sub MB_SelectAllContexts Lib "MemBrainDll.dll" _
+Alias "__MB_SelectAllContexts@4" (ByVal addToSelection As Long)
+
+' Select an unresolved neuron
+Private Declare Function MB_SelectUnresolved Lib "MemBrainDll.dll" _
+Alias "__MB_SelectUnresolved@8" (ByVal unrNeuronIdx As Long, ByVal addToSelection As Long) As Long
+
+' Select all unresolved neurons
+Private Declare Sub MB_SelectAllUnresolved Lib "MemBrainDll.dll" _
+Alias "__MB_SelectAllUnresolved@4" (ByVal addToSelection As Long)
+
+' Clear the Extra Selection
+Private Declare Sub MB_ClearExtraSelection Lib "MemBrainDll.dll" _
+Alias "__MB_ClearExtraSelection@0" ()
+
+' Apply Extra Selection to the current selection
+Private Declare Sub MB_ExtraSelection Lib "MemBrainDll.dll" _
+Alias "__MB_ExtraSelection@0" ()
+
+' Connect FROM Extra Selection
+Private Declare Sub MB_ConnectFromExtra Lib "MemBrainDll.dll" _
+Alias "__MB_ConnectFromExtra@0" ()
+
+' Connect TO Extra Selection
+Private Declare Sub MB_ConnectToExtra Lib "MemBrainDll.dll" _
+Alias "__MB_ConnectToExtra@0" ()
+
+' Add an input neuron to the net
+Private Declare Sub MB_AddInput Lib "MemBrainDll.dll" _
+Alias "__MB_AddInput@12" (ByVal posX As Long, ByVal posY As Long, ByVal name As String)
+
+' Add an output neuron to the net
+Private Declare Sub MB_AddOutput Lib "MemBrainDll.dll" _
+Alias "__MB_AddOutput@12" (ByVal posX As Long, ByVal posY As Long, ByVal name As String)
+
+' Add an unresolved hidden neuron to the net
+Private Declare Sub MB_AddHidden Lib "MemBrainDll.dll" _
+Alias "__MB_AddHidden@12" (ByVal posX As Long, ByVal posY As Long, ByVal name As String)
+
+' Get the properties of the currently selected neuron
+Private Declare Function MB_GetSelectedNeuronProp Lib "MemBrainDll.dll" _
+Alias "__MB_GetSelectedNeuronProp@4" (ByRef prop As NeuronProp) As Long
+
+' Set the properties of the selected neurons
+Private Declare Function MB_SetSelectedNeuronProp Lib "MemBrainDll.dll" _
+Alias "__MB_SetSelectedNeuronProp@4" (ByRef prop As NeuronProp) As Long
+
+' Delete the selected objects
+Private Declare Sub MB_DeleteSelectedObjects Lib "MemBrainDll.dll" _
+Alias "__MB_DeleteSelectedObjects@0" ()
+
+' Prepare for a new net
+Private Declare Sub MB_ClearNet Lib "MemBrainDll.dll" _
+Alias "__MB_ClearNet@0" ()
+
+' Set the name of the selected neurons
+Private Declare Sub MB_SetSelectedNeuronName Lib "MemBrainDll.dll" _
+Alias "__MB_SetSelectedNeuronName@4" (ByVal name As String)
+
+' Move all selected neurons
+Private Declare Sub MB_MoveSelectedNeurons Lib "MemBrainDll.dll" _
+Alias "__MB_MoveSelectedNeurons@8" (ByVal dX As Long, ByVal dY As Long)
+
+' Select all links from Extra Selection to Selection
+Private Declare Sub MB_SelectFromExtra Lib "MemBrainDll.dll" _
+Alias "__MB_SelectFromExtra@0" ()
+
+' Select all links from Selection to Extra Selection
+Private Declare Sub MB_SelectToExtra Lib "MemBrainDll.dll" _
+Alias "__MB_SelectToExtra@0" ()
+
+
+' Get the properties of the selected link
+Private Declare Function MB_GetSelectedLinkProp Lib "MemBrainDll.dll" _
+Alias "__MB_GetSelectedLinkProp@4" (ByRef prop As LinkProp) As Long
+
+' Set the properties of the selected links
+Private Declare Function MB_SetSelectedLinkProp Lib "MemBrainDll.dll" _
+Alias "__MB_SetSelectedLinkProp@4" (ByRef prop As LinkProp) As Long
+
+' Get the position of the selected neuron
+Private Declare Function MB_GetSelectedNeuronPos Lib "MemBrainDll.dll" _
+Alias "__MB_GetSelectedNeuronPos@8" (ByRef posX As Long, ByRef posY As Long) As Long
+
+' Get the nearest grid point to a given point
+Private Declare Function MB_GetGridPoint Lib "MemBrainDll.dll" _
+Alias "__MB_GetGridPoint@16" (ByVal x As Long, ByVal y As Long, ByRef gridX As Long, ByRef gridY As Long) As Long
+
+' Get the adjusted grid width
+Private Declare Function MB_GetGridWidth Lib "MemBrainDll.dll" _
+Alias "__MB_GetGridWidth@0" () As Long
+
+' Get a random value between 0 an 1
+Private Declare Function MB_Random Lib "MemBrainDll.dll" _
+Alias "__MB_Random@0" () As Double

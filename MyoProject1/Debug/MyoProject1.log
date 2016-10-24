@@ -1,0 +1,28 @@
+﻿C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppBuild.targets(392,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (MyoProject1.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  gui.cpp
+c:\users\neco\desktop\abschluss\programm\myoproject1\myo-sdk-win-0.9.0\include\myo\cxx\detail\throwonerror.hpp(39): warning C4297: 'myo::ThrowOnError::~ThrowOnError': function assumed not to throw an exception but does
+  c:\users\neco\desktop\abschluss\programm\myoproject1\myo-sdk-win-0.9.0\include\myo\cxx\detail\throwonerror.hpp(39): note: destructor or deallocator has a (possibly implicit) non-throwing exception specification
+c:\users\neco\desktop\abschluss\programm\myoproject1\myo-sdk-win-0.9.0\include\myo\cxx\detail\throwonerror.hpp(45): warning C4297: 'myo::ThrowOnError::~ThrowOnError': function assumed not to throw an exception but does
+  c:\users\neco\desktop\abschluss\programm\myoproject1\myo-sdk-win-0.9.0\include\myo\cxx\detail\throwonerror.hpp(45): note: destructor or deallocator has a (possibly implicit) non-throwing exception specification
+c:\users\neco\desktop\abschluss\programm\myoproject1\myoproject1\gui.cpp(58): warning C4101: 'emg_data': unreferenced local variable
+  neuralesNetz.cpp
+c:\users\neco\desktop\abschluss\programm\myoproject1\myoproject1\neuralesnetz.cpp(9): warning C4018: '<': signed/unsigned mismatch
+  main.cpp
+c:\users\neco\desktop\abschluss\programm\myoproject1\myo-sdk-win-0.9.0\include\myo\cxx\detail\throwonerror.hpp(39): warning C4297: 'myo::ThrowOnError::~ThrowOnError': function assumed not to throw an exception but does
+  c:\users\neco\desktop\abschluss\programm\myoproject1\myo-sdk-win-0.9.0\include\myo\cxx\detail\throwonerror.hpp(39): note: destructor or deallocator has a (possibly implicit) non-throwing exception specification
+c:\users\neco\desktop\abschluss\programm\myoproject1\myo-sdk-win-0.9.0\include\myo\cxx\detail\throwonerror.hpp(45): warning C4297: 'myo::ThrowOnError::~ThrowOnError': function assumed not to throw an exception but does
+  c:\users\neco\desktop\abschluss\programm\myoproject1\myo-sdk-win-0.9.0\include\myo\cxx\detail\throwonerror.hpp(45): note: destructor or deallocator has a (possibly implicit) non-throwing exception specification
+  algorithmus.cpp
+c:\users\neco\desktop\abschluss\programm\myoproject1\myo-sdk-win-0.9.0\include\myo\cxx\detail\throwonerror.hpp(39): warning C4297: 'myo::ThrowOnError::~ThrowOnError': function assumed not to throw an exception but does
+  c:\users\neco\desktop\abschluss\programm\myoproject1\myo-sdk-win-0.9.0\include\myo\cxx\detail\throwonerror.hpp(39): note: destructor or deallocator has a (possibly implicit) non-throwing exception specification
+c:\users\neco\desktop\abschluss\programm\myoproject1\myo-sdk-win-0.9.0\include\myo\cxx\detail\throwonerror.hpp(45): warning C4297: 'myo::ThrowOnError::~ThrowOnError': function assumed not to throw an exception but does
+  c:\users\neco\desktop\abschluss\programm\myoproject1\myo-sdk-win-0.9.0\include\myo\cxx\detail\throwonerror.hpp(45): note: destructor or deallocator has a (possibly implicit) non-throwing exception specification
+c:\users\neco\desktop\abschluss\programm\myoproject1\myoproject1\algorithmus.cpp(171): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
+c:\users\neco\desktop\abschluss\programm\myoproject1\myoproject1\algorithmus.cpp(283): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
+  Generating Code...
+c:\users\neco\desktop\abschluss\programm\myoproject1\myoproject1\algorithmus.cpp(77): warning C4715: 'algorithmus::check_gesture': not all control paths return a value
+c:\users\neco\desktop\abschluss\programm\myoproject1\myoproject1\algorithmus.cpp(173): warning C4715: 'algorithmus::get_ykoord': not all control paths return a value
+c:\users\neco\desktop\abschluss\programm\myoproject1\myoproject1\algorithmus.cpp(285): warning C4715: 'algorithmus::get_xkoord': not all control paths return a value
+c:\users\neco\desktop\abschluss\programm\myoproject1\myoproject1\neuralesnetz.cpp(94): warning C4715: 'neuralesNetz::getOutput': not all control paths return a value
+  MyoProject1.vcxproj -> C:\Users\Neco\Desktop\Abschluss\Programm\MyoProject1\Debug\MyoSteuerung.exe
+  MyoProject1.vcxproj -> C:\Users\Neco\Desktop\Abschluss\Programm\MyoProject1\Debug\MyoSteuerung.pdb (Partial PDB)
